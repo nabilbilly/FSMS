@@ -7,7 +7,6 @@ import {
   Mail,
   Plus,
   X,
-  Save,
   Activity,
   ArrowUpRight,
   Zap,
@@ -962,13 +961,5 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const EmptyState = ({ label }: { label: string }) => (
-  <div className="bg-[#0a0a0f] border border-white/5 border-dashed rounded-3xl py-20 flex flex-col items-center justify-center space-y-4">
-    <div className="p-4 rounded-full bg-white/5 text-gray-600">
-      <AlertCircle size={32} />
-    </div>
-    <span className="text-gray-500 font-medium">{label}</span>
-  </div>
-);
 
 export default MasterAdmin;

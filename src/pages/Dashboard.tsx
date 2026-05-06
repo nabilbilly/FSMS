@@ -179,8 +179,9 @@ const Dashboard: React.FC = () => {
           setTotalItems(data.total);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Dashboard fetch error:", err);
+      setError("Failed to load dashboard data. Please check your connection.");
     } finally {
       setIsLoading(false);
     }
@@ -233,8 +234,9 @@ const Dashboard: React.FC = () => {
       if (response.ok) {
         fetchData();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Delete template error:", err);
+      setError("Failed to delete template. Please try again.");
     }
   };
 
@@ -255,8 +257,9 @@ const Dashboard: React.FC = () => {
       if (response.ok) {
         fetchData();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Delete customer error:", err);
+      setError("Failed to delete customer. Please try again.");
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config";
 import {
   X,
@@ -8,7 +8,6 @@ import {
   Loader2,
   AlertCircle,
   Users,
-  Layout,
   Calendar,
 } from "lucide-react";
 import ReactQuill from "react-quill-new";
