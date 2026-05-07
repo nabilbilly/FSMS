@@ -163,12 +163,7 @@ const Dashboard: React.FC = () => {
       }
 
       const qs = params.toString();
-      const rawUrl = `${API_BASE_URL}/${endpoint}/${qs ? `?${qs}` : ""}`;
-
-      // Secondary safety check: Force HTTPS again just before the fetch
-      const finalUrl = rawUrl.replace(/^http:\/\//i, "https://");
-
-      console.log("DEBUG: Dashboard fetching from:", finalUrl);
+      const finalUrl = `${API_BASE_URL}/${endpoint}/${qs ? `?${qs}` : ""}`;
 
       const contentRes = await fetch(finalUrl, {
         headers: { Authorization: `Bearer ${token}` },
