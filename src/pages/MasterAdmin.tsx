@@ -31,6 +31,19 @@ interface GlobalStats {
   total_emails: number;
   total_customers: number;
 }
+interface ServiceHealth {
+  status: "connected" | "disconnected";
+  latency_ms?: number;
+  error?: string;
+  active_workers?: number;
+  workers?: string[];
+}
+interface HealthData {
+  redis: ServiceHealth;
+  celery_worker: ServiceHealth;
+  database: ServiceHealth;
+  overall: string;
+}
 interface Company {
   id: number;
   name: string;
@@ -70,6 +83,12 @@ const MasterAdmin: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Desktop: expanded/collapsed
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile: open/closed overlay
 
+  // Infrastructure Health
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [healthLoading, setHealthLoading] = useState(true);
+  const [healthExpanded, setHealthExpanded] = useState(false);
+  const [lastHealthCheck, setLastHealthCheck] = useState<Date | null>(null);
+
   const [cf, setCf] = useState({
     name: "",
     slug: "",
@@ -87,6 +106,33 @@ const MasterAdmin: React.FC = () => {
     // Close mobile menu on view change
     setIsMobileMenuOpen(false);
   }, [view]);
+
+  // Health polling — every 30 seconds
+  const fetchHealth = async () => {
+    try {
+      setHealthLoading(true);
+      const r = await fetch(`${BASE}/health`);
+      if (r.ok) {
+        setHealth(await r.json());
+        setLastHealthCheck(new Date());
+      }
+    } catch (e) {
+      setHealth({
+        redis: { status: "disconnected", error: "API unreachable" },
+        celery_worker: { status: "disconnected", error: "API unreachable", active_workers: 0 },
+        database: { status: "disconnected", error: "API unreachable" },
+        overall: "Critical: API Unreachable",
+      });
+    } finally {
+      setHealthLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (selectedCompanyId) {
@@ -311,17 +357,117 @@ const MasterAdmin: React.FC = () => {
 
         <div className="mt-auto w-full">
           <div
-            className={`flex items-center gap-3 p-6 bg-white/5 border-t border-white/5 w-full ${
-              (!isSidebarOpen && !isMobileMenuOpen) && "justify-center"
+            className={`border-t border-white/5 w-full bg-white/[0.02] ${
+              (!isSidebarOpen && !isMobileMenuOpen) ? "p-4 flex justify-center" : "p-4"
             }`}
           >
-            <div className="relative">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
-            </div>
-            {(isSidebarOpen || isMobileMenuOpen) && (
-              <div className="flex flex-col animate-in fade-in duration-300">
-                <span className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Systems</span>
-                <span className="text-xs text-emerald-400 font-medium">Operational</span>
+            {(!isSidebarOpen && !isMobileMenuOpen) ? (
+              /* Collapsed: Single dot indicator */
+              <button onClick={() => { setIsSidebarOpen(true); setHealthExpanded(true); }} className="relative group" title="Infrastructure Status">
+                <div className={`w-3 h-3 rounded-full transition-colors ${
+                  healthLoading ? "bg-yellow-500 animate-pulse" :
+                  !health ? "bg-gray-600" :
+                  health.redis.status === "connected" && health.celery_worker.status === "connected" && health.database.status === "connected"
+                    ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"
+                    : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse"
+                }`} />
+              </button>
+            ) : (
+              /* Expanded: Full health panel */
+              <div>
+                <button
+                  onClick={() => setHealthExpanded(!healthExpanded)}
+                  className="w-full flex items-center justify-between mb-3 group"
+                >
+                  <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Infrastructure</span>
+                  <div className="flex items-center gap-2">
+                    {healthLoading && <Loader2 size={10} className="animate-spin text-gray-500" />}
+                    <ChevronRight size={12} className={`text-gray-600 transition-transform ${healthExpanded ? 'rotate-90' : ''}`} />
+                  </div>
+                </button>
+
+                {/* Service Status Dots - Always visible */}
+                <div className="space-y-2">
+                  {[
+                    { key: "redis", label: "Redis", data: health?.redis },
+                    { key: "celery_worker", label: "Celery Worker", data: health?.celery_worker },
+                    { key: "database", label: "Database", data: health?.database },
+                  ].map(({ key, label, data }) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          !data ? "bg-gray-600" :
+                          data.status === "connected"
+                            ? "bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.5)]"
+                            : "bg-red-400 shadow-[0_0_4px_rgba(248,113,113,0.5)]"
+                        }`} />
+                        <span className="text-[11px] text-gray-400 font-medium">{label}</span>
+                      </div>
+                      <span className={`text-[10px] font-bold ${
+                        !data ? "text-gray-600" :
+                        data.status === "connected" ? "text-emerald-500" : "text-red-400"
+                      }`}>
+                        {!data ? "..." :
+                         data.status === "connected"
+                          ? (data.latency_ms ? `${data.latency_ms}ms` : data.active_workers ? `${data.active_workers} up` : "OK")
+                          : "Down"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Expanded Details */}
+                {healthExpanded && health && (
+                  <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {/* Error details for any down services */}
+                    {["redis", "celery_worker", "database"].map((key) => {
+                      const data = health[key as keyof HealthData] as ServiceHealth;
+                      if (data?.status === "disconnected" && data.error) {
+                        return (
+                          <div key={key} className="p-2 rounded-lg bg-red-500/10 border border-red-500/10">
+                            <p className="text-[9px] text-red-400 font-mono leading-relaxed break-all">
+                              {key}: {data.error}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+
+                    {/* Celery worker names */}
+                    {health.celery_worker.status === "connected" && health.celery_worker.workers && (
+                      <div className="p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                        <p className="text-[9px] text-emerald-400/70 font-mono">
+                          Workers: {health.celery_worker.workers.join(", ")}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Last check + refresh */}
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[9px] text-gray-600">
+                        {lastHealthCheck ? `Checked ${Math.round((Date.now() - lastHealthCheck.getTime()) / 1000)}s ago` : "Checking..."}
+                      </span>
+                      <button
+                        onClick={fetchHealth}
+                        disabled={healthLoading}
+                        className="text-[9px] text-indigo-400 hover:text-indigo-300 font-bold disabled:opacity-50 transition-colors"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Overall status label */}
+                <div className={`mt-3 pt-2 border-t border-white/5 text-[10px] font-bold ${
+                  !health ? "text-gray-600" :
+                  health.overall.includes("Operational") ? "text-emerald-400" :
+                  health.overall.includes("Critical") ? "text-red-400" :
+                  "text-amber-400"
+                }`}>
+                  {health?.overall || "Checking..."}
+                </div>
               </div>
             )}
           </div>
