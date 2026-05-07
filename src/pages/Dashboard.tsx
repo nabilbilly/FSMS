@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
 
     try {
       // 1. Fetch Stats
-      const statsRes = await fetch(`${API_BASE_URL}/customers/stats`, {
+      const statsRes = await fetch(`${API_BASE_URL}/customers/stats/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (statsRes.status === 401) return handleLogout();
@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
       }
 
       const qs = params.toString();
-      const rawUrl = `${API_BASE_URL}/${endpoint}${qs ? `?${qs}` : ""}`;
+      const rawUrl = `${API_BASE_URL}/${endpoint}/${qs ? `?${qs}` : ""}`;
       
       // Secondary safety check: Force HTTPS again just before the fetch
       const finalUrl = rawUrl.replace(/^http:\/\//i, "https://");
