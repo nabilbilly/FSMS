@@ -232,7 +232,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/messages/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/messages/${id}/`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -255,7 +255,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/customers/${id}/`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
       setPageError(null);
       
       try {
-        const response = await fetch(`${API_BASE_URL}/admin/public/companies/${companySlug}/branches`);
+        const response = await fetch(`${API_BASE_URL}/admin/public/companies/${companySlug}/branches/`);
         if (!response.ok) {
           const data = await response.json();
           throw new Error(data.detail || 'Company not found');

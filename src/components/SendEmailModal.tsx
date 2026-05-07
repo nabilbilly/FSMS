@@ -68,7 +68,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/messages`, {
+      const response = await fetch(`${API_BASE_URL}/messages/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -84,7 +84,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
     setIsFetching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/customers`, {
+      const response = await fetch(`${API_BASE_URL}/customers/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -157,8 +157,8 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
       const token = localStorage.getItem("token");
       const isBulk = recipientMode === "group";
       const endpoint = isBulk
-        ? `${API_BASE_URL}/email/send-bulk`
-        : `${API_BASE_URL}/email/send`;
+        ? `${API_BASE_URL}/email/send-bulk/`
+        : `${API_BASE_URL}/email/send/`;
 
       const payload = isBulk
         ? {
