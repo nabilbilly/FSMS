@@ -33,11 +33,11 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose, on
     }
 
     if (clean.startsWith("+233") || (clean.length === 12 && phone.startsWith("+233"))) {
-       // if already has +, just ensure it's +233 followed by 9 digits
-       const digits = phone.replace(/\D/g, "");
-       if (digits.length === 12) return "+" + digits;
+      // if already has +, just ensure it's +233 followed by 9 digits
+      const digits = phone.replace(/\D/g, "");
+      if (digits.length === 12) return "+" + digits;
     }
-    
+
     if (clean.length === 13 && phone.startsWith("+233")) {
       return phone;
     }
@@ -62,15 +62,15 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose, on
 
     setIsLoading(true);
     const token = localStorage.getItem('token');
-    
+
     const payload = {
       full_name: formData.full_name,
       phone_number: formattedPhone,
       email: formData.email.trim() === '' ? null : formData.email,
     };
-    
+
     try {
-      const response = await fetch(`${API_BASE_URL}/customers/`, {
+      const response = await fetch(`${API_BASE_URL}/customers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose, on
       <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">Add New Customer</h2>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
           >

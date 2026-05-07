@@ -164,10 +164,10 @@ const Dashboard: React.FC = () => {
 
       const qs = params.toString();
       const rawUrl = `${API_BASE_URL}/${endpoint}/${qs ? `?${qs}` : ""}`;
-      
+
       // Secondary safety check: Force HTTPS again just before the fetch
       const finalUrl = rawUrl.replace(/^http:\/\//i, "https://");
-      
+
       console.log("DEBUG: Dashboard fetching from:", finalUrl);
 
       const contentRes = await fetch(finalUrl, {
@@ -232,7 +232,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/messages/${id}/`, {
+      const response = await fetch(`${API_BASE_URL}/messages/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -255,7 +255,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/customers/${id}/`, {
+      const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -457,11 +457,10 @@ const Dashboard: React.FC = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as any)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === tab
                       ? "bg-white text-gray-900 shadow-sm border border-gray-200"
                       : "text-gray-400 hover:text-gray-600"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -633,10 +632,10 @@ const Dashboard: React.FC = () => {
                     {(activeTab === "Templates" ||
                       activeTab === "Customers" ||
                       activeTab === "Pending") && (
-                      <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100 text-right">
-                        Actions
-                      </th>
-                    )}
+                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100 text-right">
+                          Actions
+                        </th>
+                      )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -666,7 +665,7 @@ const Dashboard: React.FC = () => {
                                 40,
                               ) +
                                 (stripHtml(item.message_content || "").length >
-                                40
+                                  40
                                   ? "..."
                                   : "")}
                             </td>
@@ -676,15 +675,14 @@ const Dashboard: React.FC = () => {
                             <td className="px-6 py-4 text-sm">
                               <div className="flex flex-col">
                                 <span
-                                  className={`w-fit px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                                    item.status === "sent"
+                                  className={`w-fit px-2 py-1 rounded-full text-[10px] font-bold uppercase ${item.status === "sent"
                                       ? "bg-green-100 text-green-700"
                                       : item.status === "failed"
                                         ? "bg-red-100 text-red-700"
                                         : item.status === "retrying"
                                           ? "bg-blue-100 text-blue-700"
                                           : "bg-amber-100 text-amber-700"
-                                  }`}
+                                    }`}
                                 >
                                   {item.status}
                                 </span>
@@ -692,11 +690,10 @@ const Dashboard: React.FC = () => {
                                   item.status === "retrying") &&
                                   item.delivery_report && (
                                     <span
-                                      className={`text-[9px] mt-1 max-w-[150px] truncate ${
-                                        item.status === "failed"
+                                      className={`text-[9px] mt-1 max-w-[150px] truncate ${item.status === "failed"
                                           ? "text-red-400"
                                           : "text-blue-400"
-                                      }`}
+                                        }`}
                                       title={item.delivery_report}
                                     >
                                       {item.delivery_report}
@@ -717,15 +714,14 @@ const Dashboard: React.FC = () => {
                             <td className="px-6 py-4 text-sm">
                               <div className="flex flex-col">
                                 <span
-                                  className={`w-fit px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                                    item.status === "sent"
+                                  className={`w-fit px-2 py-1 rounded-full text-[10px] font-bold uppercase ${item.status === "sent"
                                       ? "bg-green-100 text-green-700"
                                       : item.status === "failed"
                                         ? "bg-red-100 text-red-700"
                                         : item.status === "retrying"
                                           ? "bg-blue-100 text-blue-700"
                                           : "bg-amber-100 text-amber-700"
-                                  }`}
+                                    }`}
                                 >
                                   {item.status}
                                 </span>
@@ -733,11 +729,10 @@ const Dashboard: React.FC = () => {
                                   item.status === "retrying") &&
                                   item.delivery_report && (
                                     <span
-                                      className={`text-[9px] mt-1 max-w-[150px] truncate ${
-                                        item.status === "failed"
+                                      className={`text-[9px] mt-1 max-w-[150px] truncate ${item.status === "failed"
                                           ? "text-red-400"
                                           : "text-blue-400"
-                                      }`}
+                                        }`}
                                       title={item.delivery_report}
                                     >
                                       {item.delivery_report}
@@ -751,11 +746,10 @@ const Dashboard: React.FC = () => {
                           <>
                             <td className="px-6 py-4 text-sm font-medium text-gray-900">
                               <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  item.type === "sms"
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === "sms"
                                     ? "bg-blue-100 text-blue-700"
                                     : "bg-indigo-100 text-indigo-700"
-                                }`}
+                                  }`}
                               >
                                 {item.type}
                               </span>
@@ -811,11 +805,11 @@ const Dashboard: React.FC = () => {
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {activeTab === "SMS Logs" || activeTab === "Email Logs"
                             ? new Date(item.scheduled_for).toLocaleString([], {
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : new Date(item.created_at).toLocaleDateString()}
                         </td>
                         {activeTab === "Templates" && (

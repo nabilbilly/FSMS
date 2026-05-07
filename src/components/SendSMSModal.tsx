@@ -67,7 +67,7 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/messages/`, {
+      const response = await fetch(`${API_BASE_URL}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -83,7 +83,7 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
     setIsFetching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/customers/`, {
+      const response = await fetch(`${API_BASE_URL}/customers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -272,22 +272,22 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
       const token = localStorage.getItem("token");
       const isBulk = recipientMode === "group";
       const endpoint = isBulk
-        ? `${API_BASE_URL}/sms/send-bulk/`
-        : `${API_BASE_URL}/sms/send/`;
+        ? `${API_BASE_URL}/sms/send-bulk`
+        : `${API_BASE_URL}/sms/send`;
 
       const payload = isBulk
         ? {
-            filter_type: selectedGroup,
-            message_content: messageContent,
-            message_type: messageType === "custom" ? "bulk_promo" : messageType,
-            scheduled_for: new Date(scheduledTime).toISOString(),
-          }
+          filter_type: selectedGroup,
+          message_content: messageContent,
+          message_type: messageType === "custom" ? "bulk_promo" : messageType,
+          scheduled_for: new Date(scheduledTime).toISOString(),
+        }
         : {
-            customer_id: selectedCustomerId,
-            message_content: messageContent,
-            message_type: messageType === "custom" ? "adhoc" : messageType,
-            scheduled_for: new Date(scheduledTime).toISOString(),
-          };
+          customer_id: selectedCustomerId,
+          message_content: messageContent,
+          message_type: messageType === "custom" ? "adhoc" : messageType,
+          scheduled_for: new Date(scheduledTime).toISOString(),
+        };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -353,22 +353,20 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
               <button
                 type="button"
                 onClick={() => setRecipientMode("single")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                  recipientMode === "single"
+                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${recipientMode === "single"
                     ? "bg-white shadow text-blue-600"
                     : "text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 Single Customer
               </button>
               <button
                 type="button"
                 onClick={() => setRecipientMode("group")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                  recipientMode === "group"
+                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${recipientMode === "group"
                     ? "bg-white shadow text-blue-600"
                     : "text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 Customer Group
               </button>
@@ -427,11 +425,10 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
                         key={customer.id}
                         type="button"
                         onClick={() => handleCustomerSelect(customer.id)}
-                        className={`w-full text-left p-3 border-b border-gray-50 last:border-none transition-colors flex items-center space-x-3 ${
-                          selectedCustomerId === customer.id
+                        className={`w-full text-left p-3 border-b border-gray-50 last:border-none transition-colors flex items-center space-x-3 ${selectedCustomerId === customer.id
                             ? "bg-blue-50 border-l-4 border-l-blue-600"
                             : "hover:bg-gray-100"
-                        }`}
+                          }`}
                       >
                         <div
                           className={`p-2 rounded-full ${selectedCustomerId === customer.id ? "bg-blue-100 text-blue-600" : "bg-gray-200 text-gray-500"}`}
@@ -510,11 +507,10 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
                   />
                   <select
                     required
-                    className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none ${
-                      messageType === "custom"
+                    className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none ${messageType === "custom"
                         ? "border-amber-200 ring-1 ring-amber-100"
                         : "border-gray-200"
-                    }`}
+                      }`}
                     value={messageType}
                     onChange={(e) => handleTemplateChange(e.target.value)}
                   >
@@ -560,9 +556,8 @@ const SendSMSModal: React.FC<SendSMSModalProps> = ({
                   <input
                     required
                     type="datetime-local"
-                    className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium cursor-pointer ${
-                      !scheduledTime ? "border-amber-200" : "border-gray-200"
-                    }`}
+                    className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium cursor-pointer ${!scheduledTime ? "border-amber-200" : "border-gray-200"
+                      }`}
                     value={scheduledTime}
                     min={new Date().toISOString().slice(0, 16)}
                     onChange={(e) => setScheduledTime(e.target.value)}

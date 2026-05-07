@@ -68,7 +68,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
   const fetchTemplates = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/messages/`, {
+      const response = await fetch(`${API_BASE_URL}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -84,7 +84,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
     setIsFetching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/customers/`, {
+      const response = await fetch(`${API_BASE_URL}/customers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 401) return onUnauthorized();
@@ -157,28 +157,28 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
       const token = localStorage.getItem("token");
       const isBulk = recipientMode === "group";
       const endpoint = isBulk
-        ? `${API_BASE_URL}/email/send-bulk/`
-        : `${API_BASE_URL}/email/send/`;
+        ? `${API_BASE_URL}/email/send-bulk`
+        : `${API_BASE_URL}/email/send`;
 
       const payload = isBulk
         ? {
-            filter_type: filterType,
-            subject,
-            message_content: messageContent,
-            scheduled_for: scheduledFor
-              ? new Date(scheduledFor).toISOString()
-              : null,
-          }
+          filter_type: filterType,
+          subject,
+          message_content: messageContent,
+          scheduled_for: scheduledFor
+            ? new Date(scheduledFor).toISOString()
+            : null,
+        }
         : {
-            recipient_email: customers.find(
-              (c) => c.id.toString() === selectedCustomerId,
-            )?.email,
-            subject,
-            message_content: messageContent,
-            scheduled_for: scheduledFor
-              ? new Date(scheduledFor).toISOString()
-              : new Date().toISOString(),
-          };
+          recipient_email: customers.find(
+            (c) => c.id.toString() === selectedCustomerId,
+          )?.email,
+          subject,
+          message_content: messageContent,
+          scheduled_for: scheduledFor
+            ? new Date(scheduledFor).toISOString()
+            : new Date().toISOString(),
+        };
 
       if (!isBulk && !payload.recipient_email) {
         throw new Error("Selected customer does not have an email address.");
@@ -280,11 +280,10 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setRecipientMode("single")}
-                  className={`flex-1 flex items-center justify-center space-x-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                    recipientMode === "single"
+                  className={`flex-1 flex items-center justify-center space-x-2 py-2 text-sm font-bold rounded-lg transition-all ${recipientMode === "single"
                       ? "bg-white text-indigo-600 shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <Users size={16} />
                   <span>Single</span>
@@ -292,11 +291,10 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setRecipientMode("group")}
-                  className={`flex-1 flex items-center justify-center space-x-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                    recipientMode === "group"
+                  className={`flex-1 flex items-center justify-center space-x-2 py-2 text-sm font-bold rounded-lg transition-all ${recipientMode === "group"
                       ? "bg-white text-indigo-600 shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <Filter size={16} />
                   <span>Group</span>
@@ -364,11 +362,10 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
               </label>
               <select
                 required
-                className={`text-[10px] font-bold px-2 py-1 rounded-lg border-none transition-colors cursor-pointer outline-none ${
-                  !selectedTemplateId
+                className={`text-[10px] font-bold px-2 py-1 rounded-lg border-none transition-colors cursor-pointer outline-none ${!selectedTemplateId
                     ? "bg-amber-50 text-amber-600 ring-1 ring-amber-200"
                     : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
-                }`}
+                  }`}
                 value={selectedTemplateId}
                 onChange={(e) => handleTemplateChange(e.target.value)}
               >
@@ -444,9 +441,8 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({
                 <input
                   required
                   type="datetime-local"
-                  className={`w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium cursor-pointer ${
-                    !scheduledFor ? "border-amber-200" : "border-gray-200"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium cursor-pointer ${!scheduledFor ? "border-amber-200" : "border-gray-200"
+                    }`}
                   value={scheduledFor}
                   min={new Date().toISOString().slice(0, 16)}
                   onChange={(e) => setScheduledFor(e.target.value)}

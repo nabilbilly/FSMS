@@ -21,7 +21,7 @@ const AddTemplateModal: React.FC<AddTemplateModalProps> = ({ isOpen, onClose, on
     toolbar: [
       [{ 'header': [1, 2, false] }],
       ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       ['link', 'clean']
     ],
   };
@@ -40,7 +40,7 @@ const AddTemplateModal: React.FC<AddTemplateModalProps> = ({ isOpen, onClose, on
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/messages/`, {
+      const response = await fetch(`${API_BASE_URL}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

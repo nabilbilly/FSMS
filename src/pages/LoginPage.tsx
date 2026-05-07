@@ -20,19 +20,19 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   // Format slug for display (e.g. "classhouse" -> "Classhouse")
-  const companyNameDisplay = companySlug 
-    ? companySlug.charAt(0).toUpperCase() + companySlug.slice(1) 
+  const companyNameDisplay = companySlug
+    ? companySlug.charAt(0).toUpperCase() + companySlug.slice(1)
     : 'System';
 
   useEffect(() => {
     const fetchBranches = async () => {
       if (!companySlug) return;
-      
+
       setIsPageLoading(true);
       setPageError(null);
-      
+
       try {
-        const response = await fetch(`${API_BASE_URL}/admin/public/companies/${companySlug}/branches/`);
+        const response = await fetch(`${API_BASE_URL}/admin/public/companies/${companySlug}/branches`);
         if (!response.ok) {
           const data = await response.json();
           throw new Error(data.detail || 'Company not found');
@@ -108,7 +108,7 @@ const LoginPage: React.FC = () => {
           <AlertCircle className="mx-auto text-red-500 mb-4" size={64} />
           <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
           <p className="text-gray-400 mb-6">{pageError}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-xl transition-colors"
           >
@@ -123,7 +123,7 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen flex bg-[#282828]">
       {/* Left side: Login Form */}
       <div className="w-full lg:w-[450px] flex flex-col justify-center px-10 py-12 bg-[#060913] relative z-10 shrink-0 border-r border-black/20">
-        
+
         <div className="w-full max-w-[360px] mx-auto">
           <div className="mb-10 text-center">
             <h1 className="text-3xl font-bold text-white tracking-tight leading-tight">
