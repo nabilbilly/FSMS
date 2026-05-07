@@ -1,9 +1,4 @@
-const rawApiUrl = (import.meta.env.VITE_API_URL || "localhost:8000").trim();
+const rawApiUrl = import.meta.env.VITE_API_URL?.trim() || "http://localhost:8000";
 
-// If the URL already includes a protocol, use it as-is.
-// Otherwise, prepend http:// for localhost/development and https:// for production.
-export const API_BASE_URL = /^https?:\/\//i.test(rawApiUrl)
-  ? rawApiUrl
-  : rawApiUrl.includes('localhost') || rawApiUrl.includes('127.0.0.1')
-    ? `http://${rawApiUrl}`
-    : `https://${rawApiUrl}`;
+// Export the API base URL with a safe fallback for local development
+export const API_BASE_URL = rawApiUrl;
