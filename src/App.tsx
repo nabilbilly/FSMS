@@ -4,9 +4,13 @@ import Dashboard from './pages/Dashboard'
 import MasterAdmin from './pages/MasterAdmin'
 import './index.css'
 
-function App() {
+// A simple wrapper to check authentication on every route change
+const ProtectedDashboard = () => {
   const isAuthenticated = !!localStorage.getItem('token');
+  return isAuthenticated ? <Dashboard /> : <Navigate to="/classhouse/login" />;
+};
 
+function App() {
   return (
     <Router>
       <Routes>
@@ -19,8 +23,9 @@ function App() {
         {/* Company-specific dashboard */}
         <Route 
           path="/:companySlug/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/classhouse/login" />} 
+          element={<ProtectedDashboard />} 
         />
+
 
         {/* Master Admin Panel */}
         <Route path="/master-admin" element={<MasterAdmin />} />
