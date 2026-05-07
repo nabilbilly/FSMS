@@ -94,6 +94,7 @@ const MasterAdmin: React.FC = () => {
     slug: "",
     hubtel_client_id: "",
     hubtel_client_secret: "",
+    hubtel_sender_id: "",
     brevo_api_key: "",
     brevo_sender_email: "",
     brevo_sender_name: "",
@@ -224,6 +225,7 @@ const MasterAdmin: React.FC = () => {
         slug: "",
         hubtel_client_id: "",
         hubtel_client_secret: "",
+        hubtel_sender_id: "",
         brevo_api_key: "",
         brevo_sender_email: "",
         brevo_sender_name: "",
@@ -521,6 +523,7 @@ const MasterAdmin: React.FC = () => {
                     slug: "",
                     hubtel_client_id: "",
                     hubtel_client_secret: "",
+                    hubtel_sender_id: "",
                     brevo_api_key: "",
                     brevo_sender_email: "",
                     brevo_sender_name: "",
@@ -778,6 +781,7 @@ const MasterAdmin: React.FC = () => {
                                     slug: c.slug,
                                     hubtel_client_id: c.hubtel_client_id || "",
                                     hubtel_client_secret: c.hubtel_client_secret || "",
+                                    hubtel_sender_id: c.hubtel_sender_id || "",
                                     brevo_api_key: c.brevo_api_key || "",
                                     brevo_sender_email: c.brevo_sender_email || "",
                                     brevo_sender_name: c.brevo_sender_name || "",
@@ -939,6 +943,9 @@ const MasterAdmin: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <InputField label="Client ID" value={cf.hubtel_client_id} onChange={v => setCf({ ...cf, hubtel_client_id: v })} />
                           <InputField label="Client Secret" type="password" value={cf.hubtel_client_secret} onChange={v => setCf({ ...cf, hubtel_client_secret: v })} />
+                        </div>
+                        <div className="w-full sm:w-1/2">
+                          <InputField label="Sender ID (Max 11 chars)" placeholder="e.g. ClassHouse" value={cf.hubtel_sender_id} onChange={v => setCf({ ...cf, hubtel_sender_id: v })} />
                         </div>
                       </div>
  
