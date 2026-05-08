@@ -51,7 +51,7 @@ interface Company {
   is_active: boolean;
   hubtel_client_id: string;
   hubtel_client_secret: string;
-  hubtel_sender_id?: string;
+  hubtel_sender_id: string;
   brevo_api_key: string;
   brevo_sender_email: string;
   brevo_sender_name: string;
