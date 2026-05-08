@@ -114,11 +114,11 @@ const MasterAdmin: React.FC = () => {
     try {
       setHealthLoading(true);
       const r = await fetch(`${BASE}/health`);
-      if (r.ok) {
-        setHealth(await r.json());
-        setLastHealthCheck(new Date());
-      }
+      if (!r.ok) throw new Error(`API error: ${r.status}`);
+      setHealth(await r.json());
+      setLastHealthCheck(new Date());
     } catch (e) {
+      console.error("Health check failed:", e);
       setHealth({
         redis: { status: "disconnected", error: "API unreachable" },
         celery_worker: { status: "disconnected", error: "API unreachable", active_workers: 0 },
@@ -151,11 +151,11 @@ const MasterAdmin: React.FC = () => {
     setLoadingBranches(true);
     try {
       const r = await fetch(`${BASE}/public/companies/${slug}/branches`);
-      if (r.ok) {
-        setBranches(await r.json());
-      }
+      if (!r.ok) throw new Error(`API error: ${r.status}`);
+      setBranches(await r.json());
     } catch (e) {
       console.error("Error fetching branches:", e);
+      flash(`Failed to load branches: ${e instanceof Error ? e.message : "Unknown error"}`);
     } finally {
       setLoadingBranches(false);
     }
@@ -166,24 +166,30 @@ const MasterAdmin: React.FC = () => {
     try {
       if (view === "overview") {
         const r = await fetch(`${BASE}/stats`);
+        if (!r.ok) throw new Error(`API error: ${r.status}`);
         setStats(await r.json());
       } else if (view === "companies") {
         const r = await fetch(`${BASE}/companies`);
+        if (!r.ok) throw new Error(`API error: ${r.status}`);
         const data = await r.json();
         setCompanies(Array.isArray(data) ? data : []);
       } else if (view === "manage-companies" || view === "settings") {
         const r = await fetch(`${BASE}/companies`);
+        if (!r.ok) throw new Error(`API error: ${r.status}`);
         const data = await r.json();
         setCompanies(Array.isArray(data) ? data : []);
       } else if (view === "sms") {
         const r = await fetch(`${BASE}/logs/sms`);
+        if (!r.ok) throw new Error(`API error: ${r.status}`);
         setLogs((await r.json()).items || []);
       } else {
         const r = await fetch(`${BASE}/logs/email`);
+        if (!r.ok) throw new Error(`API error: ${r.status}`);
         setLogs((await r.json()).items || []);
       }
     } catch (e) {
       console.error(e);
+      flash(`Failed to load data: ${e instanceof Error ? e.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }
