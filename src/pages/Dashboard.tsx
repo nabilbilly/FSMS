@@ -20,6 +20,7 @@ import {
   Filter,
   Calendar,
   ChevronLeft,
+  Upload,
 } from "lucide-react";
 
 interface StatCardProps {
@@ -72,16 +73,23 @@ import SendEmailModal from "../components/SendEmailModal";
 import AddTemplateModal from "../components/AddTemplateModal";
 import EditCustomerModal from "../components/EditCustomerModal";
 import RescheduleModal from "../components/RescheduleModal";
+import BulkSMSImportModal from "../components/BulkSMSImportModal";
 import { stripHtml } from "../utils/helpers";
 
 const Dashboard: React.FC = () => {
   const { companySlug } = useParams<{ companySlug: string }>();
   const [activeTab, setActiveTab] = useState<
     "Customers" | "SMS Logs" | "Email Logs" | "Templates" | "Pending"
-  >("Customers");
+  >((sessionStorage.getItem("activeTab") as any) || "Customers");
+
+  useEffect(() => {
+    sessionStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
+  const [isBulkSMSImportModalOpen, setIsBulkSMSImportModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -213,13 +221,15 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSMSSuccess = () => {
-    fetchData();
-    setActiveTab("SMS Logs");
+    sessionStorage.setItem("activeTab", "SMS Logs");
+    alert("Campaign/Message successfully queued and sent to dispatch!");
+    window.location.reload();
   };
 
   const handleEmailSuccess = () => {
-    fetchData();
-    setActiveTab("Email Logs");
+    sessionStorage.setItem("activeTab", "Email Logs");
+    alert("Campaign/Email successfully queued and sent to dispatch!");
+    window.location.reload();
   };
 
   const handleDeleteTemplate = async (id: number) => {
@@ -333,6 +343,13 @@ const Dashboard: React.FC = () => {
         pendingItem={rescheduleItem}
       />
 
+      <BulkSMSImportModal
+        isOpen={isBulkSMSImportModalOpen}
+        onClose={() => setIsBulkSMSImportModalOpen(false)}
+        onSuccess={handleSMSSuccess}
+        onUnauthorized={handleLogout}
+      />
+
       {/* Top Navbar */}
       <nav className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center space-x-4">
@@ -401,7 +418,7 @@ const Dashboard: React.FC = () => {
           <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4 px-1">
             Quick Actions
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
             <QuickAction
               icon={<UserPlus size={24} />}
               label="Add Customer"
@@ -413,6 +430,12 @@ const Dashboard: React.FC = () => {
               label="Send SMS"
               onClick={() => setIsSMSModalOpen(true)}
               color="text-blue-600"
+            />
+            <QuickAction
+              icon={<Upload size={24} />}
+              label="Bulk Import"
+              onClick={() => setIsBulkSMSImportModalOpen(true)}
+              color="text-indigo-600"
             />
             <QuickAction
               icon={<Mail size={24} />}
@@ -652,7 +675,14 @@ const Dashboard: React.FC = () => {
                         {active_tab_log_is_sms && (
                           <>
                             <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                              {item.phone_number}
+                              <div className="flex items-center space-x-2">
+                                <span>{item.phone_number}</span>
+                                {item.is_bulk && (
+                                  <span className="bg-blue-100 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                    Bulk
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-600">
                               {stripHtml(item.message_content || "").substring(
