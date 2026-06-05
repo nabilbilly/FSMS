@@ -86,7 +86,7 @@ const MasterAdmin: React.FC = () => {
   const [contactSearch, setContactSearch] = useState("");
   const contactLimit = 15;
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState<null | "company" | "branch" | "delete-company">(null);
+  const [modal, setModal] = useState<null | "company" | "branch" | "delete-company" | "import-contacts">(null);
   const [targetCompany, setTargetCompany] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   
